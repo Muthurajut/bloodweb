@@ -91,74 +91,75 @@
       z-index: 25;
     }
 
-#endMessage {
-  font-family: 'Ageo', sans-serif;
-  position: fixed;
-  bottom: 30px;
-  left: 5%;
-  right: 0;
-  text-align: left;
-  font-size: 32px;
-  color: #fff;
-  font-weight: normal;
-  letter-spacing: 2px;
-  opacity: 0;
-  transition: opacity 1s;
-  z-index: 40;
-  line-height: 1.1;
-}
+    #endMessage {
+      font-family: 'Ageo', sans-serif;
+      position: fixed;
+      bottom: 30px;
+      left: 5%;
+      right: 0;
+      text-align: left;
+      font-size: 32px;
+      color: #fff;
+      font-weight: normal;
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 1s;
+      z-index: 40;
+      line-height: 1.1;
+    }
 
-#endMessage p {
-  font-size: 14px;
-  font-weight: normal;
-  margin: 0 0 8px 0; /* ensures perfect spacing above the second line */
-  letter-spacing: 1px;
-}
+    #endMessage p {
+      font-size: 14px;
+      font-weight: normal;
+      margin: 0 0 8px 0;
+      /* ensures perfect spacing above the second line */
+      letter-spacing: 1px;
+    }
 
-#endMessage::after {
-  content: "";
-  display: block;
-  width: 61%;
-  height: 1px;
-  background: #fff;
-  margin: 4px 8px 0 auto; /* aligns closely under the text */
-  border-radius: 2px;
-}
+    #endMessage::after {
+      content: "";
+      display: block;
+      width: 61%;
+      height: 1px;
+      background: #fff;
+      margin: 4px 8px 0 auto;
+      /* aligns closely under the text */
+      border-radius: 2px;
+    }
 
-#endMessage .bloodimg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  margin: -18px -15px -13px;
-  padding: 0;
-}
+    #endMessage .bloodimg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      margin: -18px -15px -13px;
+      padding: 0;
+    }
 
-#endMessage .bloodimg img {
-  display: inline-block;
-  vertical-align: middle;
-  width: auto;
-  margin: 0;
-  padding: 0;
-}
+    #endMessage .bloodimg img {
+      display: inline-block;
+      vertical-align: middle;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Responsive fine-tuning for smaller screens */
-@media (max-width: 768px) {
-  #endMessage {
-    font-size: 24px;
-    left: 6%;
-  }
+    /* Responsive fine-tuning for smaller screens */
+    @media (max-width: 768px) {
+      #endMessage {
+        font-size: 24px;
+        left: 6%;
+      }
 
-  #endMessage::after {
-    width: 75%;
-    margin-top: 3px;
-  }
+      #endMessage::after {
+        width: 75%;
+        margin-top: 3px;
+      }
 
-  #endMessage p {
-    margin-bottom: 6px;
-  }
-}
-
+      #endMessage p {
+        margin-bottom: 6px;
+      }
+    }
   </style>
 </head>
 
