@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Bleeding Screen - Anti-War (3D Blood)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 200vh;
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    @font-face {
+      font-family: 'Ageo';
+      src: url('../fonts/Ageo-Regular.ttf') format('truetype');
+      font-weight: normal;
+    }
+
+
+    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oooh+Baby&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap');
+
+
+    svg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .victim-content {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(10px)scale(0.95);
+      transition: opacity .5s, transform .5s;
+      z-index: 30;
+      pointer-events: none;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      text-transform: uppercase;
+      /* background:rgba(255,255,255,.85);padding:10px 14px;border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,.2); */
+    }
+
+    .victim-content.active {
+      opacity: 1;
+      transform: translateY(-5px)scale(1);
+    }
+
+    .victim-content img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .victim-content .headline {
+      font-weight: 500;
+      font-size: 24px;
+    }
+
+    .victim-content .subheadline {
+      font-size: 14px;
+      color: #fff;
+    }
+
+    #headlineText {
+      position: absolute;
+      top: 60vh;
+      left: 73%;
+      transform: translateX(-50%);
+      color: #888;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      text-align: center;
+      z-index: 25;
+    }
+
+    #endMessage {
+      font-family: 'Ageo', sans-serif;
+      position: fixed;
+      bottom: 30px;
+      left: 5%;
+      right: 0;
+      text-align: left;
+      font-size: 32px;
+      color: #fff;
+      font-weight: normal;
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 1s;
+      z-index: 40;
+    }
+
+    #endMessage p {
+      font-family: 'Inter' sans-serif !important;
+    }
+
+    #endMessage::after {
+      content: "";
+      display: block;
+      width: 61%;
+      height: 1px;
+      background: #fff;
+      margin: 6px 8px 0px auto;
+      border-radius: 2px;
+    }
+
+    #endMessage .bloodimg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      margin: -18px -15px -13px;
+      padding: 0;
+    }
+
+    #endMessage .bloodimg img {
+      display: inline-block;
+      vertical-align: middle;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="headlineText">CLICK TO SEE WHAT WE HAVE CALLED UPON</div>
+  <div id="endMessage">
+    <p style="font-size:14px;font-weight:normal;">WE DON'T WANT TO DO THIS WEBSITE ANYMORE!</p>
+    LET'S ST
+    <span class="bloodimg">
+      <img src="images/bloodneew.png" alt="" class="img-fluid">
+    </span>
+    P THIS BLOOD FLOW
+  </div>
+
+  <svg id="svgContainer">
+    <defs>
+      <!-- You may delete the filter below, or simply not reference it -->
+      <filter id="liquify">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
+        <feColorMatrix in="blur" type="matrix" values=".3 0 0 0 0, 0 .1 0 0 0, 0 0 0 0 0, 0 0 0 20 -5" />
+      </filter>
+    </defs>
+    <g id="bloodGroup" filter="url(#liquify)"></g> <!-- NO filter attribute! -->
+  </svg>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.1.11/chance.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+  <script>
+    const strokeWidth = 15;
+    const svgContainer = document.querySelector("#svgContainer");
+    const bloodGroup = document.querySelector("#bloodGroup");
+    const TL = new TimelineMax({ paused: true });
+    const power = [Power0, Power1, Power2, Power3];
+    let boxHeight = svgContainer.getBoundingClientRect().height;
+    let boxWidth = svgContainer.getBoundingClientRect().width;
+
+    function addLines() {
+      const fragment = document.createDocumentFragment();
+      boxHeight = svgContainer.getBoundingClientRect().height;
+      boxWidth = svgContainer.getBoundingClientRect().width;
+      svgContainer.setAttribute("viewBox", `0 0 ${boxWidth} ${boxHeight}`);
+
+      const layers = [
+        { color: "#8b0000", opacity: 0.8, width: strokeWidth + 4 },
+        { color: "#b30000", opacity: 0.9, width: strokeWidth },
+        { color: "#ff0000", opacity: 0.7, width: strokeWidth - 3 }
+      ];
+
+      for (let layer of layers) {
+        for (let i = Math.ceil(boxWidth / strokeWidth); i > 0; i--) {
+          const posX = (i - 1) * strokeWidth + chance.floating({ min: -3, max: 3 });
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          const curveOffset = chance.floating({ min: -40, max: 40 });
+          const pathData = `M${posX},0 Q${posX + curveOffset},${boxHeight / 2} ${posX},${boxHeight}`;
+          line.setAttribute("d", pathData);
+          line.setAttribute("stroke", layer.color);
+          line.setAttribute("stroke-width", layer.width);
+          line.setAttribute("stroke-linecap", "round");
+          line.setAttribute("fill", "none");
+          line.setAttribute("stroke-opacity", layer.opacity);
+          line.style.filter = "";
+          const ease = chance.integer({ min: 0, max: 2 });
+          TL.fromTo(line, chance.integer({ min: 2, max: 5 }),
+            { strokeDasharray: boxHeight, strokeDashoffset: boxHeight },
+            {
+              strokeDashoffset: 0, delay: chance.floating({ min: 0, max: 2, fixed: 2 }),
+              ease: power[chance.integer({ min: 0, max: 3 })][`ease${ease ? (ease === 1 ? "In" : "Out") : "InOut"}`]
+            }, 0);
+          fragment.appendChild(line);
+        }
+      }
+      bloodGroup.appendChild(fragment);
+    }
+
+    svgContainer.style.height = `calc(100vh + ${strokeWidth * 3}px)`;
+    addLines();
+    TL.progress(0.25).pause();
+
+    const endMessage = document.getElementById("endMessage");
+    let targetProgress = 0.20, currentProgress = 0.20;
+
+    window.addEventListener("scroll", () => {
+      const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      targetProgress = 0.20 + scrollPercent * 0.80;
+      endMessage.style.opacity = scrollPercent > 0.87 ? 1 : 0;
+    });
+
+    function animate() {
+      currentProgress += (targetProgress - currentProgress) * 0.08;
+      TL.progress(currentProgress);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Random victim popup
+    const contentList = [
+      { hl: 'Amir Hossein Rahimi', sub: 'Beloved Son' },
+      { hl: 'Sara Esfahani', sub: 'Cherished Daughter' },
+      { hl: 'Layla Al-Hassan', sub: 'Family’s Light' },
+      { hl: 'Reza Karimi', sub: 'Kind Soul' },
+      { hl: 'Rasha Ibrahim', sub: 'Smiling Spirit' },
+      { hl: 'Ali Reza Shafiei', sub: 'Forever Loved' },
+      { hl: 'Mehrdad Ghasemi', sub: 'Gentle Heart' },
+      { hl: 'Noor Khalaf', sub: 'Bright Light' },
+      { hl: 'Pouya Khorrami', sub: 'Heart of Gold' },
+      { hl: 'Mahsa Amini', sub: 'Forever in Hearts' },
+      { hl: 'Hossein Bahrami', sub: 'Dad’s Joy' },
+      { hl: 'Karim Hassan', sub: 'Kind Brother' },
+      { hl: 'Dalia Abdulrahman', sub: 'Dearest Friend' },
+      { hl: 'Tarek Al-Rashid', sub: 'Beloved Father’s Son' },
+      { hl: 'Nazanin Ebrahimi', sub: 'Daddy’s Girl' },
+      { hl: 'Yasmin Al-Tamimi', sub: 'Heart of Pure' }
+    ];
+
+    let activePopup = null;
+
+    document.body.addEventListener('click', e => {
+      // 🟥 Skip popup if click is inside #endMessage
+      if (e.target.closest('#endMessage')) return;
+
+      if (activePopup) activePopup.remove();
+
+      const data = contentList[chance.integer({ min: 0, max: contentList.length - 1 })];
+      const content = document.createElement('div');
+      content.classList.add('victim-content');
+      content.innerHTML = `
+      <div class="text-box">
+        <div class="headline">${data.hl}</div>
+        <div class="subheadline">${data.sub}</div>
+      </div>
+    `;
+      document.body.appendChild(content);
+
+      const popupRect = content.getBoundingClientRect();
+      const offsetY = 35;
+
+      let posX = e.pageX - popupRect.width / 2;
+      let posY = e.pageY + offsetY;
+
+      if (posX < 10) posX = 10;
+      if (posX + popupRect.width > window.innerWidth - 10)
+        posX = window.innerWidth - popupRect.width - 10;
+
+      if (posY + popupRect.height > window.innerHeight + window.scrollY - 10)
+        posY = window.scrollY + window.innerHeight - popupRect.height - 10;
+
+      content.style.left = `${posX}px`;
+      content.style.top = `${posY}px`;
+
+      requestAnimationFrame(() => content.classList.add('active'));
+      activePopup = content;
+    });
+  </script>
+
+</body>
+
+</html>

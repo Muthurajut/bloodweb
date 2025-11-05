@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bleeding Screen - Anti-War</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 200vh;
+  font-family: sans-serif;
+  background: #000;
+  overflow-x: hidden;
+  color: #fff;
+}
+svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+}
+svg line {
+  stroke: red;
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* Victim points invisible */
+.victim-point {
+  position: absolute;
+  width: 40px;
+  height: 30px;
+  background: transparent;
+  opacity: 0; /* hidden */
+  cursor: pointer;
+  z-index: 15;
+}
+
+.victim-content {
+  position: absolute;
+  display: flex;
+  align-items: center;
+   justify-content: center;/* vertical center */
+   
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  transition: opacity 0.5s, transform 0.5s;
+  z-index: 30;
+  pointer-events: none;
+  color: #000;
+  font-size: 16px;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.victim-content.active {
+  opacity: 1;
+  transform: translateY(-5px) scale(1);
+}
+
+.victim-content img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.victim-content .text-box {
+  display: flex;
+  flex-direction: column;
+   align-items: center;
+}
+.victim-content .text-box .headline {
+  font-weight: 500;
+  font-size: 24px;
+}
+.victim-content .text-box .subheadline {
+  font-size: 14px;
+  color: #444;
+}
+#headlineText {
+  position: absolute;
+  top: 60vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #828282;
+  font-size: 18px;
+  font-weight: NORMAL;
+  text-align: center;
+  z-index: 25;
+  pointer-events: none;
+}
+#endMessage { 
+  position:fixed; bottom:30px; left:0; right:0; 
+  text-align:center; font-size:50px;
+  color:#FFF; font-weight:bold; letter-spacing:2px; 
+  opacity:0; transition:opacity 1s; z-index:40;
+}
+#endMessage::after {
+  content: "";
+  display: block;
+  width: 120px; /* 👈 custom underline width */
+  height: 2px;
+  background: #FFF; /* underline color */
+  margin: 6px auto 0; /* centers underline below text */
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<div id="headlineText">CLICK TO SEE WHAT WE HAVE CALLED UPON</div>
+<div id="endMessage"><P style="font-size:14px;font-weight:normal;">we DON'T WANT TO DO THIS WEBSITE ANYMORE!</P>LET'S STOP THIS BLOOD FLOW</div>
+
+<svg id="svgContainer">
+  <filter id="liquify">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur"/>
+    <feColorMatrix in="blur" type="matrix" values=".15 0 0 0 0, 0 0 0 0 0, 0 0 0 0 0, 0 0 0 100 -20"/>
+  </filter>
+  <g filter="url(#liquify)"></g>
+</svg>
+
+<script src="js/chance.min.js"></script>
+<script src="js/TweenMax.min.js"></script>
+<script>
+const strokeWidth = 15,
+svgContainer = document.querySelector("#svgContainer"),
+svgGroup = svgContainer.querySelector("g"),
+TL = new TimelineMax({ paused:true }),
+power = [Power0, Power1, Power2, Power3];
+
+let boxHeight = svgContainer.getBoundingClientRect().height,
+    boxWidth = svgContainer.getBoundingClientRect().width,
+    clearSVG;
+
+function addLines() {
+  const fragment = document.createDocumentFragment();
+  boxHeight = svgContainer.getBoundingClientRect().height;
+  boxWidth = svgContainer.getBoundingClientRect().width;
+  svgContainer.setAttribute("viewBox", `0 0 ${boxWidth} ${boxHeight}`);
+  for(let i = Math.ceil(boxWidth/strokeWidth); i>0; i--){
+    const posX = (i-1)*strokeWidth;
+    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+    const ease = chance.integer({min:0,max:2});
+    line.setAttribute("x1", posX);
+    line.setAttribute("x2", posX);
+    line.setAttribute("y1","0");
+    line.setAttribute("y2","100%");
+    line.setAttribute("style",`stroke-width:${strokeWidth+2};stroke-dasharray:${boxHeight};stroke-dashoffset:${boxHeight}`);
+    fragment.appendChild(line);
+    TL.fromTo(line, chance.integer({min:2,max:4}),
+      { strokeDashoffset: boxHeight },
+      { strokeDashoffset:0, delay:chance.floating({min:0,max:1,fixed:2}), ease:power[chance.integer({min:0,max:3})][`ease${ease?(ease===1?"In":"Out"):"InOut"}`] }, 0);
+  }
+  svgGroup.appendChild(fragment);
+}
+svgContainer.style.height = `calc(100vh + ${strokeWidth*3}px)`;
+addLines();
+TL.progress(0.25).pause();
+
+// Smooth scroll + end message fade
+const endMessage = document.getElementById("endMessage");
+let targetProgress = 0.20, currentProgress = 0.20;
+
+window.addEventListener("scroll", () => {
+  const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  targetProgress = 0.20 + scrollPercent * 0.80;
+  endMessage.style.opacity = scrollPercent > 0.87 ? 1 : 0;
+});
+
+function animate() {
+  currentProgress += (targetProgress - currentProgress) * 0.08;
+  TL.progress(currentProgress);
+  requestAnimationFrame(animate);
+}
+animate();
+
+// Victim data
+const contentList = [
+  { img: 'images/blood-stain.png', hl: 'Victim - 1', sub: '26YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 2', sub: '25YRS | BOMB BLAST' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 3', sub: '30YRS | INJURED' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 4', sub: '28YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 5', sub: '24YRS | INJURED' },
+   { img: 'images/blood-stain.png', hl: 'Victim - 6', sub: '26YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 7', sub: '25YRS | BOMB BLAST' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 8', sub: '30YRS | INJURED' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 9', sub: '28YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 10', sub: '24YRS | INJURED' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 11', sub: '26YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 12', sub: '25YRS | BOMB BLAST' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 13', sub: '30YRS | INJURED' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 14', sub: '28YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 15', sub: '24YRS | INJURED' },
+   { img: 'images/blood-stain.png', hl: 'Victim - 16', sub: '26YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 17', sub: '25YRS | BOMB BLAST' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 18', sub: '30YRS | INJURED' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 19', sub: '28YRS | SHOT DEAD' },
+  { img: 'images/blood-stain.png', hl: 'Victim - 20', sub: '24YRS | INJURED' }
+];
+
+// Many invisible points
+const numPoints = 80;
+const points = [];
+for (let i = 0; i < numPoints; i++) {
+  const point = document.createElement('div');
+  point.classList.add('victim-point');
+  point.style.left = chance.floating({ min: 0, max: 100 }) + 'vw';
+  point.style.top = chance.floating({ min: 0, max: 200 }) + 'vh';
+  document.body.appendChild(point);
+  points.push(point);
+}
+
+// Click anywhere → show random victim content
+let activePopup = null;
+document.body.addEventListener('click', (e) => {
+  if (activePopup) activePopup.remove(); // remove previous popup
+
+  const data = contentList[chance.integer({ min: 0, max: contentList.length - 1 })];
+  const content = document.createElement('div');
+  content.classList.add('victim-content');
+  document.body.appendChild(content);
+  content.innerHTML = `
+    <img src="${data.img}">
+    <div class="text-box">
+      <div class="headline">${data.hl}</div>
+      <div class="subheadline">${data.sub}</div>
+    </div>`;
+
+  // Measure popup size
+  const popupRect = content.getBoundingClientRect();
+  const offset = 10; // small padding from edges
+
+  let posX = e.pageX;
+  let posY = e.pageY;
+
+  // Prevent going off right edge
+  if (posX + popupRect.width + offset > window.innerWidth) {
+    posX = window.innerWidth - popupRect.width - offset;
+  }
+
+  // Prevent going off bottom edge
+  if (posY + popupRect.height + offset > window.innerHeight + window.scrollY) {
+    posY = window.scrollY + window.innerHeight - popupRect.height - offset;
+  }
+
+  // Prevent going off left/top edge
+  if (posX < offset) posX = offset;
+  if (posY < window.scrollY + offset) posY = window.scrollY + offset;
+
+  content.style.left = posX + 'px';
+  content.style.top = posY + 'px';
+
+  // Animate in
+  requestAnimationFrame(() => content.classList.add('active'));
+  activePopup = content;
+});
+
+</script>
+</body>
+</html>
