@@ -116,16 +116,16 @@
       letter-spacing: 1px;
     }
 
-    #endMessage::after {
+    /* #endMessage::after {
       content: "";
       display: block;
       width: 61%;
       height: 1px;
       background: #fff;
       margin: 4px 8px 0 auto;
-      /* aligns closely under the text */
+     
       border-radius: 2px;
-    }
+    } */
 
     #endMessage .bloodimg {
       display: inline-flex;
@@ -144,6 +144,13 @@
       padding: 0;
     }
 
+    .hr {
+      width: 70%;
+      background-color: #fff;
+      height: 1px;
+      margin: 0 -25px -13px auto;
+    }
+
     /* Responsive fine-tuning for smaller screens */
     @media (max-width: 768px) {
       #endMessage {
@@ -160,6 +167,15 @@
         margin-bottom: 6px;
       }
     }
+
+    @media screen and (min-width: 1445px) {
+      .hr {
+        width: 83%;
+        background-color: #fff;
+        height: 1px;
+        margin: 0 -1% -13px auto;
+      }
+    }
   </style>
 </head>
 
@@ -173,6 +189,7 @@
       <img src="images/bloodneew.png" alt="" class="img-fluid">
     </span>
     P THIS BLOOD FLOW
+    <div class="hr"></div>
   </div>
 
   <svg id="svgContainer">
